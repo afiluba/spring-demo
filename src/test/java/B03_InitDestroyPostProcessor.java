@@ -11,9 +11,13 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class B03_InitDestroyPostProcessor {
     /**
      * @see InitDestroyAnnotationBeanPostProcessor
+     * @see InitDestroyAnnotationBeanPostProcessor#postProcessMergedBeanDefinition
+     * @see InitDestroyAnnotationBeanPostProcessor#postProcessBeforeInitialization
      * @see org.springframework.context.annotation.CommonAnnotationBeanPostProcessor
      */
     @Test
@@ -33,6 +37,9 @@ public class B03_InitDestroyPostProcessor {
         Bean1 bean1 = bf.getBean(Bean1.class);
 
         bf.destroySingletons();
+
+        assertThat(bean1.isInitCalled()).isTrue();
+        assertThat(bean1.isDestroyCalled()).isTrue();
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -42,14 +49,27 @@ public class B03_InitDestroyPostProcessor {
     @interface MyDestroy {}
 
     static class Bean1 {
+        private boolean initCalled;
+        private boolean destroyCalled;
+
         @MyInit
         public void iiinit() {
+            initCalled = true;
             System.out.println("Bean1.iiinit");
         }
 
         @MyDestroy
         public void dddestroy() {
+            destroyCalled = true;
             System.out.println("Bean1.dddestroy");
+        }
+
+        public boolean isInitCalled() {
+            return initCalled;
+        }
+
+        public boolean isDestroyCalled() {
+            return destroyCalled;
         }
     }
 }

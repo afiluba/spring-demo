@@ -1,3 +1,4 @@
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -8,7 +9,12 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class B02_ProxyPostProcessor {
+    /**
+     * Example returning proxy-object instead of created bean
+     */
     @Test
     void proxyPostProcessor() {
         DefaultListableBeanFactory bf = new DefaultListableBeanFactory();
@@ -21,11 +27,13 @@ public class B02_ProxyPostProcessor {
 
         Interface1 bean1 = bf.getBean(Interface1.class);
 
-        bean1.method("TEST");
+        bean1.exampleCall("TEST");
+
+        assertThat(bean1).isNotExactlyInstanceOf(Bean1.class);
     }
 
     interface Interface1 {
-        String method(String in);
+        String exampleCall(String in);
     }
 
     static class Bean1 implements Interface1 {
@@ -33,7 +41,7 @@ public class B02_ProxyPostProcessor {
             System.out.println("Bean1.Bean1");
         }
 
-        public String method(String in) {
+        public String exampleCall(String in) {
             return in;
         }
     }
@@ -42,7 +50,7 @@ public class B02_ProxyPostProcessor {
         @Override
         public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
             System.out.println("LoggingBeanProcessor.postProcessBeforeInitialization");
-            return Proxy.newProxyInstance(bean.getClass().getClassLoader(), new Class[] { Interface1.class},
+            return Proxy.newProxyInstance(bean.getClass().getClassLoader(), new Class[] { Interface1.class },
                     new LoggingProxy(bean));
         }
 

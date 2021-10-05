@@ -212,6 +212,8 @@ public class A01_BasicBeanFactory {
         Bean1 bean1 = bf.getBean(Bean1.class);
         Bean1 bean2 = bf.getBean("bean2", Bean1.class);
 
+        System.out.println(bean1.getClass());
+
         assertThat(bean1).isNotNull();
         assertThat(bean2).isNotNull();
     }
@@ -237,6 +239,7 @@ public class A01_BasicBeanFactory {
         bf.registerBeanDefinition("bean2", bd2);
 
         Bean2 bean2 = bf.getBean("bean2", Bean2.class);
+        System.out.println(bean2.getClass());
         Bean1 bean1 = bean2.lookup();
 
         assertThat(bean2).isNotNull();
@@ -263,6 +266,7 @@ public class A01_BasicBeanFactory {
         bf.registerBeanDefinition("bean3", bd2);
 
         Bean3 bean3 = bf.getBean("bean3", Bean3.class);
+        System.out.println(bean3.getClass());
         assertThat(bean3.replace()).isEqualTo("REIMPLEMENTED");
     }
 
@@ -471,7 +475,7 @@ public class A01_BasicBeanFactory {
         }
     }
 
-    static abstract class Bean3 extends Bean1 {
+    static class Bean3 extends Bean1 {
         String replace() {
             return "ORIGINAL";
         }
